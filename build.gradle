@@ -1,0 +1,47 @@
+group 'advanced-rss-feeder'
+version '1.0-SNAPSHOT'
+
+buildscript {
+    ext.kotlin_version = '1.2.10'
+    ext.jrawVersion = '1.0.0'
+    ext.jackson_module_version = '2.9.0'
+
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'kotlin'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+    jcenter()
+}
+
+dependencies {
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jre8:$kotlin_version"
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+    compile "net.dean.jraw:JRAW:$jrawVersion"
+    compile "com.fasterxml.jackson.module:jackson-module-kotlin:$jackson_module_version"
+
+    // http://mvnrepository.com/artifact/org.slf4j/slf4j-simple
+    compile group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.21'
+}
+
+compileKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
+compileTestKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
+
+task(runMain, dependsOn: 'classes', type: JavaExec) {
+    main = 'advanced-rss-feeder'
+    classpath = sourceSets.main.runtimeClasspath
+}
