@@ -1,7 +1,7 @@
 # advanced-rss-feedr
 
-A reddit bot with a basic RSS feed reader and extended moderation utility.
-Perfect for posting to and moderating subreddits that follow media content from RSS feeds.
+A framework for a reddit bot that includes a basic RSS reader and extended moderation utility.
+Perfect for posting regular updates and moderating a subreddit that follows media content from RSS feeds.
 
 Uses [JRAW](https://github.com/mattbdean/JRAW) as a reddit API wrapper.
 

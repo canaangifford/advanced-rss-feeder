@@ -36,21 +36,11 @@ class RSSBot {
 
             redditClient = OAuthHelper.automatic(adapter, credentials)
 
-            //authenticateSelf()
         } catch(e: Exception) {
             println("Error reading properties file. Ensure the formatting is as specified in the readme file.")
             println(e.message)
         }
     }
-
-//    /**
-//     * Retrieves authentication cookie from the Reddit API.
-//     */
-//    fun authenticateSelf() {
-//        val authData = redditClient!!.getOAuthHelper()!!.easyAuth(credentials)
-//        redditClient!!.authenticate(authData)
-//        accountManager = AccountManager(redditClient)
-//    }
 
     /**
      * Creates a new 'self' text Post based on an RSS Post.
@@ -83,10 +73,16 @@ class RSSBot {
 
     }
 
+    /**
+     * Polls the current feed.
+     */
     fun hasNewFeedItem(): Boolean {
         return reader!!.pollFeed()
     }
 
+    /**
+     * Returns the newest item in the RSS feed.
+     */
     fun getNewFeedItem(): FeedItem? {
         return reader!!.getNewestItem()
     }

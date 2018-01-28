@@ -5,7 +5,9 @@ import java.time.LocalDateTime
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
-
+/**
+ * Main application thread.
+ */
 fun main(args: Array<String>) {
     if (args.size > 1) {
         println("Invalid arguments.")
@@ -30,7 +32,7 @@ fun main(args: Array<String>) {
                     val newRSSItem = rssBot.getNewFeedItem()
                     val post = RSSPost()
                     post.postTitle = newRSSItem!!.title + " Discussion Thread"
-                    post.postText = "New Episode!"
+                    post.postText = "New Episode!\nExcellent Test!"
                     rssBot.makeRSSTextPost(post)
                     println("Success!    " + post.postTitle)
                 }
@@ -46,13 +48,7 @@ fun main(args: Array<String>) {
                 println("Application thread encountered an error while running...")
                 println(e.message)
             }
-
             runtime++
-            if(runtime%30==0) {
-                // Re-authenticate the session every 30 minutes.
-                // This is probably excessive but the app will be unable to post without it.
-                //rssBot.authenticateSelf()
-            }
         }
     }
 
