@@ -13,19 +13,19 @@ Uses [JRAW](https://github.com/mattbdean/JRAW) as a reddit API wrapper.
 
 2. Add the following json to the file, entering the appropriate data.
 
-    {
-      "id":"",
-      "secret":"",
-      "username":"",
-      "password":"",
-      "redirectUri":"",
-      "subreddit":"",
-      "rssFeedUrl":"",
-      "platform":"desktop",
-      "appId":"advanced-rss-feedr",
-      "version":"v1.0",
-      "devRedditUser":""
-    }
+        {
+          "id":"",
+          "secret":"",
+          "username":"",
+          "password":"",
+          "redirectUri":"",
+          "subreddit":"",
+          "rssFeedUrl":"",
+          "platform":"desktop",
+          "appId":"advanced-rss-feedr",
+          "version":"v1.0",
+          "devRedditUser":""
+        }
 
 3. Open Init.kt and add any actions you would like the bot to perform.
 
