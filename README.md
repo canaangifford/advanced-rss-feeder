@@ -1,4 +1,4 @@
-# advanced-rss-feedr
+# advanced-rss-feeder
 
 A framework for a reddit bot that includes a basic RSS reader and extended moderation utility.
 Perfect for posting regular updates and moderating a subreddit that follows media content from RSS feeds.
