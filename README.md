@@ -22,7 +22,7 @@ Uses [JRAW](https://github.com/mattbdean/JRAW) as a reddit API wrapper.
           "subreddit":"",
           "rssFeedUrl":"",
           "platform":"desktop",
-          "appId":"advanced-rss-feedr",
+          "appId":"advanced-rss-feeder",
           "version":"v1.0",
           "devRedditUser":""
         }

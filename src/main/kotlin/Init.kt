@@ -1,9 +1,10 @@
-@file:JvmName("advanced-rss-feeder")
-
 import models.RSSPost
 import java.time.LocalDateTime
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
+import java.time.DayOfWeek
+import java.time.LocalTime
+
 
 /**
  * Main application thread.
@@ -20,12 +21,17 @@ fun main(args: Array<String>) {
     println("Initializing bot and feed listener.")
     val rssBot = RSSBot()
 
-    // Bot script will execute every 5 minutes
+    val executor = Executors.newScheduledThreadPool(2)
+
+    // Posting bot script will execute every minute.
     // Set custom actions for bot here based on criteria.
-    val executor = Executors.newScheduledThreadPool(1)
     val botRunner = Runnable {
          run {
             try {
+                val date = LocalDateTime.now()
+                val time = date.toLocalTime()
+                val today = date.dayOfWeek
+
                 // RSS Feed check.
                 if(rssBot.hasNewFeedItem()) {
                     // Set your own values here for Post title and Text content.
@@ -37,23 +43,37 @@ fun main(args: Array<String>) {
                     println("Success!    " + post.postTitle)
                 }
 
-                if(false) {
-                    // can set additional actions for the bot based on datetime criteria etc...
+                if(today == DayOfWeek.SATURDAY && time == LocalTime.NOON) {
+                    println("Saturday Post")
                 }
 
                 if(false) {
-                    // ...
+                    // can set additional post actions for the bot based on further datetime criteria etc...
                 }
             } catch(e: Exception) {
-                println("Application thread encountered an error while running...")
+                println("RSS Application thread encountered an error while running...")
                 println(e.message)
             }
             runtime++
         }
     }
 
+    // Episode fetch bot will execute every 10 seconds.
+    // It will poll the subreddit for comments containing a given flag + search term.
+    val episodeFetch = Runnable {
+        run {
+            try {
+
+            } catch(e: Exception) {
+                println("Episode search thread encountered an error while running...")
+                println(e.message)
+            }
+        }
+    }
+
     try {
-        executor.scheduleAtFixedRate(botRunner, 0, 5, TimeUnit.MINUTES)
+        executor.scheduleAtFixedRate(botRunner, 0, 1, TimeUnit.MINUTES)
+        executor.scheduleAtFixedRate(episodeFetch, 0, 10, TimeUnit.SECONDS)
     } catch (t: Throwable) {
         println("Application thread encountered an error while executing...")
         println("Uptime was: $runtime minutes")

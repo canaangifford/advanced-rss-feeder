@@ -43,7 +43,7 @@ class RSSReader(feedUrl: String) {
      */
     fun getSpecificItem(searchTerm: String): FeedItem? {
         for(item: FeedItem in feed!!.items) {
-            if(item.title.equals(searchTerm)) {
+            if(item.title.contains(searchTerm, ignoreCase = true)) {
                 return item
             }
         }
@@ -89,8 +89,7 @@ class RSSReader(feedUrl: String) {
             while (eventReader.hasNext()) {
                 var event = eventReader.nextEvent()
                 if (event.isStartElement) {
-                    val localPart = event.asStartElement().name
-                            .localPart
+                    val localPart = event.asStartElement().name.localPart
                     when (localPart) {
                         "item" -> {
                             if (isFeedHeader) {

@@ -16,8 +16,13 @@ buildscript {
 
 apply plugin: 'java'
 apply plugin: 'kotlin'
+apply plugin: 'application'
 
+mainClassName = 'InitKt'
 sourceCompatibility = 1.8
+
+// optional memory arguments
+applicationDefaultJvmArgs = ["-Xms512m", "-Xmx1g"]
 
 repositories {
     mavenCentral()
@@ -39,9 +44,4 @@ compileKotlin {
 }
 compileTestKotlin {
     kotlinOptions.jvmTarget = "1.8"
-}
-
-task(runMain, dependsOn: 'classes', type: JavaExec) {
-    main = 'advanced-rss-feeder'
-    classpath = sourceSets.main.runtimeClasspath
 }
