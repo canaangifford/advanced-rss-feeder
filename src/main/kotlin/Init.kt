@@ -36,8 +36,8 @@ fun main(args: Array<String>) {
                     val post = RSSPost()
                     val newRSSItem = rssBot.getNewestFeedItem()
                     post.postTitle = newRSSItem!!.title + " Discussion Thread"
-                    post.postText = "New Episode!  \n  Excellent Test!"
-                    rssBot.makeRSSTextPost(post)
+                    post.postUrl = newRSSItem.link
+                    rssBot.makeRSSLinkPost(post)
 
                     println("Success!    " + post.postTitle)
                 }
