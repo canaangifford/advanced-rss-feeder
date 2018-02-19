@@ -1,10 +1,9 @@
+import models.ChronoPost
 import models.RSSPost
 import java.time.LocalDateTime
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import java.time.DayOfWeek
-import java.time.LocalTime
-
 
 /**
  * Main application thread.
@@ -15,12 +14,9 @@ fun main(args: Array<String>) {
         return
     }
 
-    var runtime = 0
-
     // Initialize Bot
-    println("Initializing bot and feed listener.")
+    println("Initializing bot and feed listener. " + LocalDateTime.now().toString())
     val rssBot = RSSBot()
-
     val executor = Executors.newScheduledThreadPool(2)
 
     // Posting bot script will execute every minute.
@@ -28,6 +24,8 @@ fun main(args: Array<String>) {
     val botRunner = Runnable {
          run {
             try {
+
+                // Keep track of time vars
                 val date = LocalDateTime.now()
                 val time = date.toLocalTime()
                 val today = date.dayOfWeek
@@ -35,16 +33,20 @@ fun main(args: Array<String>) {
                 // RSS Feed check.
                 if(rssBot.hasNewFeedItem()) {
                     // Set your own values here for Post title and Text content.
-                    val newRSSItem = rssBot.getNewFeedItem()
                     val post = RSSPost()
+                    val newRSSItem = rssBot.getNewestFeedItem()
                     post.postTitle = newRSSItem!!.title + " Discussion Thread"
-                    post.postText = "New Episode!\nExcellent Test!"
+                    post.postText = "New Episode!  \n  Excellent Test!"
                     rssBot.makeRSSTextPost(post)
+
                     println("Success!    " + post.postTitle)
                 }
 
-                if(today == DayOfWeek.SATURDAY && time == LocalTime.NOON) {
-                    println("Saturday Post")
+                if(today == DayOfWeek.SATURDAY && time.hour == 12 && time.minute == 0) {
+                    val post = ChronoPost()
+                    post.postTitle = "Saturday Post"
+                    post.postText = "Saturday Post Content!"
+                    rssBot.makeChronoPost(post)
                 }
 
                 if(false) {
@@ -54,16 +56,15 @@ fun main(args: Array<String>) {
                 println("RSS Application thread encountered an error while running...")
                 println(e.message)
             }
-            runtime++
         }
     }
 
     // Episode fetch bot will execute every 10 seconds.
-    // It will poll the subreddit for comments containing a given flag + search term.
+    // It will check the associated reddit account for user mentions.
     val episodeFetch = Runnable {
         run {
             try {
-
+                rssBot.processEpisodeRequests()
             } catch(e: Exception) {
                 println("Episode search thread encountered an error while running...")
                 println(e.message)
@@ -76,7 +77,7 @@ fun main(args: Array<String>) {
         executor.scheduleAtFixedRate(episodeFetch, 0, 10, TimeUnit.SECONDS)
     } catch (t: Throwable) {
         println("Application thread encountered an error while executing...")
-        println("Uptime was: $runtime minutes")
+        println(LocalDateTime.now().toString())
         println("--------------------")
         println(t.message)
     }

@@ -12,12 +12,6 @@ class FeedItem {
     var pubDate: String = ""
     var guid: String = ""
 
-    override fun toString(): String {
-        return ("FeedItem [title=" + title + ", description=" + description
-                + ", link=" + link + ", author=" + author + ", date=" + pubDate + ", guid=" + guid
-                + "]")
-    }
-
 }
 
 
