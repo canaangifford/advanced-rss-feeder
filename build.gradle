@@ -21,6 +21,16 @@ apply plugin: 'application'
 mainClassName = 'InitKt'
 sourceCompatibility = 1.8
 
+jar {
+    manifest {
+        attributes 'Main-Class': 'InitKt'
+    }
+    // This line of code recursively collects and copies all of a project's files
+    // and adds them to the JAR itself. One can extend this task, to skip certain
+    // files or particular types at will
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+}
+
 // optional memory arguments
 applicationDefaultJvmArgs = ["-Xms512m", "-Xmx1g"]
 

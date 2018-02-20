@@ -22,7 +22,7 @@ fun main(args: Array<String>) {
     // Posting bot script will execute every minute.
     // Set custom actions for bot here based on criteria.
     val botRunner = Runnable {
-         run {
+        run {
             try {
 
                 // Keep track of time vars
@@ -31,7 +31,7 @@ fun main(args: Array<String>) {
                 val today = date.dayOfWeek
 
                 // RSS Feed check.
-                if(rssBot.hasNewFeedItem()) {
+                if (rssBot.hasNewFeedItem()) {
                     // Set your own values here for Post title and Text content.
                     val post = RSSPost()
                     val newRSSItem = rssBot.getNewestFeedItem()
@@ -42,17 +42,17 @@ fun main(args: Array<String>) {
                     println("Success!    " + post.postTitle)
                 }
 
-                if(today == DayOfWeek.SATURDAY && time.hour == 12 && time.minute == 0) {
+                if (today == DayOfWeek.SATURDAY && time.hour == 12 && time.minute == 0) {
                     val post = ChronoPost()
                     post.postTitle = "Saturday Post"
                     post.postText = "Saturday Post Content!"
                     rssBot.makeChronoPost(post)
                 }
 
-                if(false) {
+                if (false) {
                     // can set additional post actions for the bot based on further datetime criteria etc...
                 }
-            } catch(e: Exception) {
+            } catch (e: Exception) {
                 println("RSS Application thread encountered an error while running...")
                 println(e.message)
             }
@@ -65,7 +65,7 @@ fun main(args: Array<String>) {
         run {
             try {
                 rssBot.processEpisodeRequests()
-            } catch(e: Exception) {
+            } catch (e: Exception) {
                 println("Episode search thread encountered an error while running...")
                 println(e.message)
             }
