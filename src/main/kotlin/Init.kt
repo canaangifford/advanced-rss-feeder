@@ -39,19 +39,23 @@ fun main(args: Array<String>) {
                     post.postUrl = newRSSItem.link
                     rssBot.makeRSSLinkPost(post)
 
-                    println("Success!    " + post.postTitle)
+                    println("Success! Found " + post.postTitle)
                 }
 
-                if (today == DayOfWeek.SATURDAY && time.hour == 12 && time.minute == 0) {
+                if (today == DayOfWeek.WEDNESDAY && time.hour == 12 && time.minute == 0) {
                     val post = ChronoPost()
-                    post.postTitle = "Saturday Post"
-                    post.postText = "Saturday Post Content!"
+                    post.postTitle = "Wednesday Post"
+                    post.postText = "Wednesday Post Content Test! This post was made at " + date
                     rssBot.makeChronoPost(post)
                 }
 
-                if (false) {
-                    // can set additional post actions for the bot based on further datetime criteria etc...
+                if (today == DayOfWeek.THURSDAY && time.hour == 12 && time.minute == 0) {
+                    val post = ChronoPost()
+                    post.postTitle = "Thursday Post"
+                    post.postText = "Thursday Post Content Test! This post was made at " + date
+                    rssBot.makeChronoPost(post)
                 }
+
             } catch (e: Exception) {
                 println("RSS Application thread encountered an error while running...")
                 println(e.message)

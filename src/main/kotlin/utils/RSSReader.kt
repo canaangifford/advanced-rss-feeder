@@ -12,6 +12,7 @@ import javax.xml.stream.events.Characters
 import javax.xml.stream.events.XMLEvent
 import models.Feed
 import models.FeedItem
+import kotlin.collections.HashMap
 
 /**
  * Reads and consumes an RSS Feed from a given URL.
@@ -40,14 +41,39 @@ class RSSReader(feedUrl: String) {
 
     /**
      * Return info for the specific searched item.
+     * Loops through the entire feed starting with most recent to find the first match.
      */
     fun getSpecificItem(searchTerm: String): FeedItem? {
-        for(item: FeedItem in feed!!.items) {
-            if(item.title.contains(searchTerm, ignoreCase = true)) {
-                return item
+        val matchValues = HashMap<FeedItem, Int>()
+        if (searchTerm != "") {
+            for (item: FeedItem in feed!!.items) {
+                // check for complete match
+                if (searchTerm.toLowerCase() == item.title.toLowerCase()) {
+                    return item
+                }
+                val possibleMatches = item.title.toLowerCase().split(" ")
+                // Check for multiple search terms
+                val searchTerms = searchTerm.toLowerCase().split(" ")
+                if (searchTerms.size > 1) {
+                    // need to calculate highest valued match
+                    var numberOfMatches = 0
+                    if (possibleMatches.contains(searchTerms[0])) {
+                        for (term in searchTerms) {
+                            possibleMatches
+                                    .filter { term == it }
+                                    .forEach { numberOfMatches++ }
+                        }
+                        matchValues.put(item, numberOfMatches)
+                    }
+                } else {
+                    // Check for occurrence of single search string
+                    if (possibleMatches.contains(searchTerm)) {
+                        return item
+                    }
+                }
             }
         }
-        return null
+        return matchValues.maxBy { it.value }?.key
     }
 
     /**
@@ -55,7 +81,7 @@ class RSSReader(feedUrl: String) {
      */
     fun pollFeed(): Boolean {
         val currFeed = buildFeed()
-        if(this.feed!!.items.size < currFeed!!.items.size) {
+        if (this.feed!!.items.size < currFeed!!.items.size) {
             this.feed = currFeed
             return true
         }

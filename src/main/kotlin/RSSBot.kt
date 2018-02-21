@@ -39,13 +39,14 @@ class RSSBot {
             subreddit = appProps.subreddit
 
             val credentials = Credentials.script(appProps.username, appProps.password, appProps.id, appProps.secret)
-            val userAgent =  UserAgent(appProps.platform, appProps.appId, appProps.version, appProps.devRedditUser)
+            val userAgent = UserAgent(appProps.platform, appProps.appId, appProps.version, appProps.devRedditUser)
             val adapter = OkHttpNetworkAdapter(userAgent)
 
             redditClient = OAuthHelper.automatic(adapter, credentials)
+            redditClient.logHttp = false // should be off by default honestly
             subredditReference = redditClient.subreddit(subreddit)
 
-        } catch(e: Exception) {
+        } catch (e: Exception) {
             println("Error reading properties file. Ensure the formatting is as specified in the readme file.")
             println(e.message)
         }
@@ -108,8 +109,8 @@ class RSSBot {
         val inbox: InboxReference = redditClient.me().inbox()
         val mentions = inbox.iterate("mentions").limit(10).build()
         for (page: Listing<Message> in mentions) {
-            for(m: Message in page) {
-                if(m.isUnread) {
+            for (m: Message in page) {
+                if (m.isUnread) {
                     mentionedMessages.add(m)
                     inbox.markRead(true, m.fullName)
                 }
@@ -121,17 +122,22 @@ class RSSBot {
     /**
      * Process the current list of episode requests made to the bot.
      * Searches RSS feed for the requested item. If a match is found, a comment
-     * containing a link to the item is submitted as a reply.
+     * containing a link to the item is submitted as a reply. The link text will be the title of the RSS item.
+     *
+     * @customMessage optional text to include in a successful search
+     * @customFailureMessage optional text to include in a failed search
      */
-    fun processEpisodeRequests() {
+    fun processEpisodeRequests(customMessage: String = "", customFailureMessage: String = "I could not find that.") {
         val requests = getUsernameMentions()
         for (m: Message in requests) {
-            val searchTerm = m.body.substring(m.body.indexOf("`"), m.body.lastIndexOf("`"))
-            val item = getSpecificFeedItem(searchTerm.removePrefix("`"))
-            if (item != null) {
-                makeCommentReplyWithRSSItemLink(item.title, item.link, m.id)
-            } else {
-                makeCommentReply("I could not find that.", m.id)
+            if (m.body.count { it == '`' } >= 2) {
+                val searchTerm = m.body.substring(m.body.indexOf("`"), m.body.lastIndexOf("`"))
+                val item = getSpecificFeedItem(searchTerm.removePrefix("`"))
+                if (item != null) {
+                    makeCommentReplyWithRSSItemLink(customMessage + item.title, item.link, m.id)
+                } else {
+                    makeCommentReply(customFailureMessage, m.id)
+                }
             }
         }
     }
@@ -158,6 +164,6 @@ class RSSBot {
      * that begins with `!`
      */
     private fun getSpecificFeedItem(searchText: String): FeedItem? {
-        return reader!!.getSpecificItem(searchText.removePrefix("`"))
+        return reader!!.getSpecificItem(searchText)
     }
 }
