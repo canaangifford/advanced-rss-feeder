@@ -1,4 +1,5 @@
 import models.ChronoPost
+import models.RSSComment
 import models.FeedItem
 import models.RSSPost
 import utils.PropertiesReader
@@ -53,15 +54,6 @@ class RSSBot {
     }
 
     /**
-     * Creates a new 'self' text Post based on an RSS Post.
-     *
-     * @post The RSSPost model to use
-     */
-    fun makeRSSTextPost(post: RSSPost) {
-        subredditReference!!.submit(SubmissionKind.SELF, post.postTitle, post.postText, false)
-    }
-
-    /**
      * Creates a new link Post based on the new RSS Feed item.
      *
      * @post The RSSPost model to use
@@ -72,31 +64,20 @@ class RSSBot {
 
     /**
      * Creates a new 'self' text Post based on a chronological event.
+     *
+     * @post The Chronological post model to user
      */
     fun makeChronoPost(post: ChronoPost) {
         subredditReference!!.submit(SubmissionKind.SELF, post.postTitle, post.postText, false)
     }
 
     /**
-     * Make a comment.
+     * Make a Reddit Comment.
      *
-     * @comment Text for the comment
-     * @id The id of the parent to reply to.
+     * @comment The RSSComment model to use
      */
-    fun makeCommentReply(comment: String, id: String) {
-        CommentReference(redditClient, id).reply(comment)
-    }
-
-    /**
-     * Submits a reddit comment with the appropriate fetched RSS item.
-     *
-     * @comment Text for the comment.
-     * @url The link address associated with the RSS item.
-     * @id The id of the parent to reply to.
-     */
-    fun makeCommentReplyWithRSSItemLink(title: String, url: String, id: String) {
-        val formattedRSSLink = "[$title]($url)"
-        CommentReference(redditClient, id).reply(formattedRSSLink)
+    fun makeCommentReply(comment: RSSComment) {
+        CommentReference(redditClient, comment.parentId).reply(comment.commentText)
     }
 
     /**
@@ -104,7 +85,7 @@ class RSSBot {
      *
      * @return The list of unread PMs with user mentions.
      */
-    private fun getUsernameMentions(): ArrayList<Message> {
+    fun getUsernameMentions(): ArrayList<Message> {
         val mentionedMessages: ArrayList<Message> = ArrayList(0)
         val inbox: InboxReference = redditClient.me().inbox()
         val mentions = inbox.iterate("mentions").limit(10).build()
@@ -120,26 +101,21 @@ class RSSBot {
     }
 
     /**
-     * Process the current list of episode requests made to the bot.
-     * Searches RSS feed for the requested item. If a match is found, a comment
-     * containing a link to the item is submitted as a reply. The link text will be the title of the RSS item.
+     * Processes a potential FeedItem message request submitted to the bot.
+     * Searches RSS feed for the requested item. If a match is found, the item is returned.
      *
-     * @customMessage optional text to include in a successful search
-     * @customFailureMessage optional text to include in a failed search
+     * @request The Message object to process
      */
-    fun processEpisodeRequests(customMessage: String = "", customFailureMessage: String = "I could not find that.") {
-        val requests = getUsernameMentions()
-        for (m: Message in requests) {
-            if (m.body.count { it == '`' } >= 2) {
-                val searchTerm = m.body.substring(m.body.indexOf("`"), m.body.lastIndexOf("`"))
-                val item = getSpecificFeedItem(searchTerm.removePrefix("`"))
-                if (item != null) {
-                    makeCommentReplyWithRSSItemLink(customMessage + item.title, item.link, m.id)
-                } else {
-                    makeCommentReply(customFailureMessage, m.id)
-                }
+    fun processFeedItemRequest(request: Message): FeedItem? {
+        if (request.body.count { it == '`' } >= 2) {
+            val searchTerm = request.body.substring(request.body.indexOf("`"), request.body.lastIndexOf("`"))
+            val item = getSpecificFeedItem(searchTerm.removePrefix("`"))
+            return when (item != null) {
+                true -> item
+                false -> FeedItem() // Return empty item if request was valid but there was no match
             }
         }
+        return null
     }
 
     /**
@@ -161,7 +137,7 @@ class RSSBot {
      * Fetches the item based on title search data.
      *
      * @searchText The episode title, or part of the episode title,
-     * that begins with `!`
+     * that is surrounded by `...`
      */
     private fun getSpecificFeedItem(searchText: String): FeedItem? {
         return reader!!.getSpecificItem(searchText)

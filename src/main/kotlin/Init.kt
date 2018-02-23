@@ -1,4 +1,5 @@
 import models.ChronoPost
+import models.RSSComment
 import models.RSSPost
 import java.time.LocalDateTime
 import java.util.concurrent.Executors
@@ -24,7 +25,6 @@ fun main(args: Array<String>) {
     val botRunner = Runnable {
         run {
             try {
-
                 // Keep track of time vars
                 val date = LocalDateTime.now()
                 val time = date.toLocalTime()
@@ -33,13 +33,11 @@ fun main(args: Array<String>) {
                 // RSS Feed check.
                 if (rssBot.hasNewFeedItem()) {
                     // Set your own values here for Post title and Text content.
-                    val post = RSSPost()
                     val newRSSItem = rssBot.getNewestFeedItem()
+                    val post = RSSPost()
                     post.postTitle = newRSSItem!!.title + " Discussion Thread"
                     post.postUrl = newRSSItem.link
                     rssBot.makeRSSLinkPost(post)
-
-                    println("Success! Found " + post.postTitle)
                 }
 
                 if (today == DayOfWeek.WEDNESDAY && time.hour == 12 && time.minute == 0) {
@@ -68,7 +66,26 @@ fun main(args: Array<String>) {
     val episodeFetch = Runnable {
         run {
             try {
-                rssBot.processEpisodeRequests()
+                // Check for Incoming Requests
+                for (m in rssBot.getUsernameMentions()) {
+                    // Process request to see if search is valid
+                    val request = rssBot.processFeedItemRequest(m)
+                    if (request != null) {
+                        if (request.title != "") {
+                            // A valid request was made and a match has been found
+                            val comment = RSSComment()
+                            comment.parentId = m.id
+                            comment.commentText = "[${request.title}](${request.link})"
+                            rssBot.makeCommentReply(comment)
+                        } else {
+                            // A valid request was made and a match has NOT been found
+                            val comment = RSSComment()
+                            comment.parentId = m.id
+                            comment.commentText = "I could not find that."
+                            rssBot.makeCommentReply(comment)
+                        }
+                    }
+                }
             } catch (e: Exception) {
                 println("Episode search thread encountered an error while running...")
                 println(e.message)
@@ -85,4 +102,13 @@ fun main(args: Array<String>) {
         println("--------------------")
         println(t.message)
     }
+}
+
+/**
+ * Optional function for parsing the RSS feed links into a customized link.
+ */
+private fun customLinkBuilder(rssLink: String): String {
+    val customUrl = "https://www.google.com/"
+    // Parse the link as needed...
+    return customUrl
 }
