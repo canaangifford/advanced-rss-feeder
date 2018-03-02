@@ -46,26 +46,30 @@ class RSSReader(feedUrl: String) {
     fun getSpecificItem(searchTerm: String): FeedItem? {
         val matchValues = HashMap<FeedItem, Int>()
         if (searchTerm != "") {
+            val separatedSearchTerms = searchTerm.toLowerCase().
+                    replace(Regex("[,.]"), "").split(" ")
             for (item: FeedItem in feed!!.items) {
                 // check for complete match
                 if (searchTerm.toLowerCase() == item.title.toLowerCase()) {
                     return item
                 }
-                val possibleMatchesInSeparatedTitle = item.title.toLowerCase().split(" ")
+                val possibleMatchesInSeparatedTitle = item.title.toLowerCase().
+                        replace(Regex("[,.]"), "").split(" ")
                 // Check for multiple search terms
-                val possibleMatchesInSeparatedSearchTerm = searchTerm.toLowerCase().split(" ")
-                if (possibleMatchesInSeparatedSearchTerm.size > 1) {
+                if (separatedSearchTerms.size > 1) {
                     // Need to calculate highest valued match
                     // First two strings are weighted higher
                     var numberOfMatches = 0
-                    if (possibleMatchesInSeparatedTitle.contains(possibleMatchesInSeparatedSearchTerm[0])) {
-                        for (term in possibleMatchesInSeparatedSearchTerm) {
-                            if (term == possibleMatchesInSeparatedSearchTerm[0] || term == possibleMatchesInSeparatedSearchTerm[1]) {
-                                numberOfMatches++
-                            }
+                    if (possibleMatchesInSeparatedTitle.contains(separatedSearchTerms[0])) {
+                        for (term in separatedSearchTerms) {
                             possibleMatchesInSeparatedTitle
                                     .filter { term == it }
-                                    .forEach { numberOfMatches++ }
+                                    .forEach {
+                                        numberOfMatches++
+                                        if (term == separatedSearchTerms[0] || term == separatedSearchTerms[1]) {
+                                            numberOfMatches++
+                                        }
+                                    }
                         }
                         matchValues.put(item, numberOfMatches)
                     }
