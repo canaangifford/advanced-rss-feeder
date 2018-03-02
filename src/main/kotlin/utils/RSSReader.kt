@@ -51,23 +51,27 @@ class RSSReader(feedUrl: String) {
                 if (searchTerm.toLowerCase() == item.title.toLowerCase()) {
                     return item
                 }
-                val possibleMatches = item.title.toLowerCase().split(" ")
+                val possibleMatchesInSeparatedTitle = item.title.toLowerCase().split(" ")
                 // Check for multiple search terms
-                val searchTerms = searchTerm.toLowerCase().split(" ")
-                if (searchTerms.size > 1) {
-                    // need to calculate highest valued match
+                val possibleMatchesInSeparatedSearchTerm = searchTerm.toLowerCase().split(" ")
+                if (possibleMatchesInSeparatedSearchTerm.size > 1) {
+                    // Need to calculate highest valued match
+                    // First two strings are weighted higher
                     var numberOfMatches = 0
-                    if (possibleMatches.contains(searchTerms[0])) {
-                        for (term in searchTerms) {
-                            possibleMatches
+                    if (possibleMatchesInSeparatedTitle.contains(possibleMatchesInSeparatedSearchTerm[0])) {
+                        for (term in possibleMatchesInSeparatedSearchTerm) {
+                            if (term == possibleMatchesInSeparatedSearchTerm[0] || term == possibleMatchesInSeparatedSearchTerm[1]) {
+                                numberOfMatches++
+                            }
+                            possibleMatchesInSeparatedTitle
                                     .filter { term == it }
                                     .forEach { numberOfMatches++ }
                         }
                         matchValues.put(item, numberOfMatches)
                     }
                 } else {
-                    // Check for occurrence of single search string
-                    if (possibleMatches.contains(searchTerm)) {
+                    // Check for occurrence of single term search string
+                    if (possibleMatchesInSeparatedTitle.contains(searchTerm)) {
                         return item
                     }
                 }
@@ -77,7 +81,9 @@ class RSSReader(feedUrl: String) {
     }
 
     /**
-     * Checks the current state of the RSS feed with the Initialized feed.
+     * Gets the new state of the RSS feed and checks it against the current feed.
+     * If the new state of the RSS feed contains more episodes, swap the existing feed
+     * into the new feed.
      */
     fun pollFeed(): Boolean {
         val currFeed = buildFeed()
@@ -103,7 +109,7 @@ class RSSReader(feedUrl: String) {
             var language = ""
             var copyright = ""
             var author = ""
-            var pubdate = ""
+            var publishDate = ""
             var guid = ""
 
             // Create an XMLInputFactory
@@ -121,7 +127,7 @@ class RSSReader(feedUrl: String) {
                             if (isFeedHeader) {
                                 isFeedHeader = false
                                 feed = Feed(title, link, description, language,
-                                        copyright, pubdate)
+                                        copyright, publishDate)
                             }
                             event = eventReader.nextEvent()
                         }
@@ -131,7 +137,7 @@ class RSSReader(feedUrl: String) {
                         "guid" -> guid = getCharacterData(event, eventReader)
                         "language" -> language = getCharacterData(event, eventReader)
                         "author" -> author = getCharacterData(event, eventReader)
-                        "pubDate" -> pubdate = getCharacterData(event, eventReader)
+                        "pubDate" -> publishDate = getCharacterData(event, eventReader)
                         "copyright" -> copyright = getCharacterData(event, eventReader)
                     }
                 } else if (event.isEndElement) {
@@ -142,7 +148,7 @@ class RSSReader(feedUrl: String) {
                         newItem.guid = guid
                         newItem.link = link
                         newItem.title = title
-                        newItem.pubDate = pubdate
+                        newItem.pubDate = publishDate
                         feed!!.items.add(newItem)
                         event = eventReader.nextEvent()
                         continue
@@ -157,7 +163,7 @@ class RSSReader(feedUrl: String) {
     }
 
     /**
-     * Helper function to handle a single XML event.
+     * Helper function to handle a single [XMLEvent].
      */
     @Throws(XMLStreamException::class)
     private fun getCharacterData(event: XMLEvent, eventReader: XMLEventReader): String {
