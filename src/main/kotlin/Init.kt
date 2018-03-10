@@ -7,7 +7,9 @@ import java.util.concurrent.TimeUnit
 import java.time.DayOfWeek
 
 /**
- * Main application thread.
+ * Main application thread. The top most level code for the bot. Contains two threads, one for performing checks on the
+ * [Feed] and updating the subreddit, and another for handling search requests made to the [Feed]. This function is
+ * intentionally customizable.
  */
 fun main(args: Array<String>) {
     if (args.size > 1) {
