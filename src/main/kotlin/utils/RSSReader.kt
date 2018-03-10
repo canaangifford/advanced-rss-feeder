@@ -15,8 +15,7 @@ import models.FeedItem
 import kotlin.collections.HashMap
 
 /**
- * Reads and consumes an RSS Feed from a given URL.
- * Includes a method to check the feed for new a post.
+ * Reads and consumes an RSS [feed] from a given URL.
  */
 class RSSReader(feedUrl: String) {
 
@@ -33,15 +32,15 @@ class RSSReader(feedUrl: String) {
     }
 
     /**
-     * Return the info for the new posting.
+     * Return the [FeedItem] for the newest posting.
      */
     fun getNewestItem(): FeedItem? {
         return feed!!.items[0]
     }
 
     /**
-     * Return info for the specific searched item.
-     * Loops through the entire feed starting with most recent to find the first match.
+     * Return info for the specific [searchTerm]. Loops through the entire [feed] starting with most recent to find the
+     * first match.
      */
     fun getSpecificItem(searchTerm: String): FeedItem? {
         val matchValues = HashMap<FeedItem, Int>()
@@ -85,9 +84,8 @@ class RSSReader(feedUrl: String) {
     }
 
     /**
-     * Gets the new state of the RSS feed and checks it against the current feed.
-     * If the new state of the RSS feed contains more episodes, swap the existing feed
-     * into the new feed.
+     * Gets the new state of the RSS feed and checks it against the current [Feed]. If the new state of the RSS feed
+     * contains more episodes, swap the existing feed into the new feed. Return [true] if the swap was successful.
      */
     fun pollFeed(): Boolean {
         val currFeed = buildFeed()
@@ -99,7 +97,7 @@ class RSSReader(feedUrl: String) {
     }
 
     /**
-     * Reads from the rss xml and builds a Feed.
+     * Reads from the rss xml and builds a [Feed].
      */
     private fun buildFeed(): Feed? {
         var feed: Feed? = null

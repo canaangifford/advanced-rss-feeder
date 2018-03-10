@@ -6,7 +6,7 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import java.io.InputStream
 
 /**
- * Builds a list of App Properties from the settings json file.
+ * Builds a list of [AppProperties] from the app-settings json file.
  */
 class PropertiesReader {
 
@@ -16,7 +16,7 @@ class PropertiesReader {
                              val platform: String, val appId: String, val version: String, val devRedditUser: String)
 
     /**
-     * Reads the settings file and returns the AppProperties data object.
+     * Reads the settings file and returns the [AppProperties] data object.
      */
     fun parseProperties(): AppProperties {
         val propertiesFile = PropertiesReader::class.java.getResourceAsStream("/app-settings.json")

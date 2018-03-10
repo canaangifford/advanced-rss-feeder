@@ -18,7 +18,8 @@ import net.dean.jraw.references.InboxReference
 
 
 /**
- * The main Bot class.
+ * The main Bot class. This class holds an [RSSReader] object which it uses to perform actions on the [Feed]. It also
+ * builds a [redditClient] to authenticate and interact with Reddit.
  */
 class RSSBot {
 
@@ -54,36 +55,35 @@ class RSSBot {
     }
 
     /**
-     * Creates a new link Post based on the new RSS Feed item.
-     *
-     * @post The RSSPost model to use
+     * Creates a new link [post] based on the new RSS Feed item.
      */
     fun makeRSSLinkPost(post: RSSPost) {
         subredditReference!!.submit(SubmissionKind.LINK, post.postTitle, post.postUrl, false)
     }
 
     /**
-     * Creates a new 'self' text Post based on a chronological event.
-     *
-     * @post The Chronological post model to user
+     * Creates a new 'self' [post] based on the new RSS Feed item.
+     */
+    fun makeRSSSelfPost(post: RSSPost) {
+        subredditReference!!.submit(SubmissionKind.SELF, post.postTitle, post.postText, false)
+    }
+
+    /**
+     * Creates a new 'self' text [post] based on a chronological event.
      */
     fun makeChronoPost(post: ChronoPost) {
         subredditReference!!.submit(SubmissionKind.SELF, post.postTitle, post.postText, false)
     }
 
     /**
-     * Make a Reddit Comment.
-     *
-     * @comment The RSSComment model to use
+     * Make a Reddit [comment] based on an [RSSComment] model.
      */
     fun makeCommentReply(comment: RSSComment) {
         CommentReference(redditClient, comment.parentId).reply(comment.commentText)
     }
 
     /**
-     * Self check for username mentions.
-     *
-     * @return The list of unread PMs with user mentions.
+     * Self check for username mentions. Returns the list of unread PMs with user mentions.
      */
     fun getUsernameMentions(): ArrayList<Message> {
         val mentionedMessages: ArrayList<Message> = ArrayList(0)
@@ -101,10 +101,8 @@ class RSSBot {
     }
 
     /**
-     * Processes a potential FeedItem message request submitted to the bot.
-     * Searches RSS feed for the requested item. If a match is found, the item is returned.
-     *
-     * @request The Message object to process
+     * Processes a potential FeedItem message [request] submitted to the bot. Searches RSS feed for the requested item.
+     * If a match is found, the item is returned.
      */
     fun processFeedItemRequest(request: Message): FeedItem? {
         if (request.body.count { it == '`' } >= 2) {
@@ -119,8 +117,7 @@ class RSSBot {
     }
 
     /**
-     * Polls the current feed.
-     * Determines if the current internal model matches the live RSS feed.
+     * Polls the current feed. Determines if the current internal model matches the live RSS feed.
      */
     fun hasNewFeedItem(): Boolean {
         return reader!!.pollFeed()
@@ -134,10 +131,7 @@ class RSSBot {
     }
 
     /**
-     * Fetches the item based on title search data.
-     *
-     * @searchText The episode title, or part of the episode title,
-     * that is surrounded by `...`
+     * Fetches the item based on title [searchText] surrounded by `...` notation.
      */
     private fun getSpecificFeedItem(searchText: String): FeedItem? {
         return reader!!.getSpecificItem(searchText)
