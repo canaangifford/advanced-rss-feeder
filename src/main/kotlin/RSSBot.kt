@@ -75,6 +75,10 @@ class RSSBot {
         subredditReference!!.submit(SubmissionKind.SELF, post.postTitle, post.postText, false)
     }
 
+    private fun flagSpoiler(boolean: Boolean) {
+
+    }
+
     /**
      * Make a Reddit [comment] based on an [RSSComment] model.
      */

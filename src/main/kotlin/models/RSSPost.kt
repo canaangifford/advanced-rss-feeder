@@ -5,4 +5,5 @@ package models
  */
 data class RSSPost(var postTitle: String = "",
                    var postText: String = "",
-                   var postUrl: String = "")
+                   var postUrl: String = "",
+                   var id: String = "")
