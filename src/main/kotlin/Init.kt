@@ -38,8 +38,12 @@ fun main(args: Array<String>) {
                     val newRSSItem = rssBot.getNewestFeedItem()
                     val post = RSSPost()
                     post.postTitle = newRSSItem!!.title + " | Discussion Thread"
-                    post.postText = newRSSItem.description
-                    rssBot.makeRSSLinkPost(post)
+                    post.postText = "On [MaxFun](http://www.maximumfun.org/shows/adventure-zone).\n" +
+                            " \n" +
+                            "The [show's RSS feed](http://adventurezone.libsyn.com/rss).\n" +
+                            " \n" +
+                            newRSSItem.description
+                    rssBot.makeRSSSelfPost(post)
                 }
 
                 if (today == DayOfWeek.SUNDAY && time.hour == 12 && time.minute == 0) {
@@ -48,8 +52,9 @@ fun main(args: Array<String>) {
                     post.postText = "This thread is for all those posts you want to make during the week that break" +
                             " the relevancy rules. Go hog wild.\n" +
                             "\n" +
-                            "This thread is not flagged for spoilers so that everyone can enjoy it, please keep that in" +
-                            " mind and use spoiler tags if you want to discuss anything pertaining to the recent arc."
+                            "This thread is not flagged for spoilers so that everyone can enjoy it, please keep that" +
+                            " in mind and use spoiler tags if you want to discuss anything pertaining to the recent " +
+                            "arc."
                     rssBot.makeChronoPost(post)
                 }
 
