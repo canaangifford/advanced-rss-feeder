@@ -35,22 +35,19 @@ fun main(args: Array<String>) {
                     // Set your own values here for Post title and Text content.
                     val newRSSItem = rssBot.getNewestFeedItem()
                     val post = RSSPost()
-                    post.postTitle = newRSSItem!!.title + " Discussion Thread"
-                    post.postUrl = newRSSItem.link
+                    post.postTitle = newRSSItem!!.title + " | Discussion Thread"
+                    post.postText = newRSSItem.description
                     rssBot.makeRSSLinkPost(post)
                 }
 
-                if (today == DayOfWeek.WEDNESDAY && time.hour == 12 && time.minute == 0) {
+                if (today == DayOfWeek.SUNDAY && time.hour == 12 && time.minute == 0) {
                     val post = ChronoPost()
-                    post.postTitle = "Wednesday Post"
-                    post.postText = "Wednesday Post Content Test! This post was made at " + date
-                    rssBot.makeChronoPost(post)
-                }
-
-                if (today == DayOfWeek.THURSDAY && time.hour == 12 && time.minute == 0) {
-                    val post = ChronoPost()
-                    post.postTitle = "Thursday Post"
-                    post.postText = "Thursday Post Content Test! This post was made at " + date
+                    post.postTitle = "Sunday Off-Topic Discussion"
+                    post.postText = "This thread is for all those posts you want to make during the week that break" +
+                            " the relevancy rules. Go hog wild.\n" +
+                            "\n" +
+                            "This thread is not flagged for spoilers so that everyone can enjoy it, please keep that in" +
+                            " mind and use spoiler tags if you want to discuss anything pertaining to the recent arc."
                     rssBot.makeChronoPost(post)
                 }
 
