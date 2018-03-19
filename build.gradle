@@ -2,7 +2,7 @@ group 'advanced-rss-feeder'
 version '1.0-TAZ'
 
 buildscript {
-    ext.kotlin_version = '1.2.10'
+    ext.kotlin_version = '1.2.30'
     ext.jrawVersion = '1.0.0'
     ext.jackson_module_version = '2.9.0'
 
