@@ -114,3 +114,10 @@ private fun customLinkBuilder(rssLink: String): String {
     // Parse the link as needed...
     return customUrl
 }
+
+/**
+ * Markdown to Url encoder. Collection of global string values. These are used to allow for proper comment formatting.
+ */
+object md {
+    val newLine = ""
+}
