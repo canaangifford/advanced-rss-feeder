@@ -1,3 +1,4 @@
+import md.newLine
 import models.ChronoPost
 import models.RSSComment
 import models.RSSPost
@@ -5,7 +6,6 @@ import java.time.LocalDateTime
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import java.time.DayOfWeek
-import kotlin.text.Typography.nbsp
 
 /**
  * Main application thread. The top most level code for the bot. Contains two threads, one for performing checks on the
@@ -39,8 +39,11 @@ fun main(args: Array<String>) {
                     val newRSSItem = rssBot.getNewestFeedItem()
                     val post = RSSPost()
                     post.postTitle = newRSSItem!!.title + " | Discussion Thread"
-                    post.postText = newRSSItem.description.replace(Regex("<.*?>"),"") +
-                            "$nbsp$nbsp On [MaxFun](http://www.maximumfun.org/shows/adventure-zone)."
+                    post.postText = "On [MaxFun](http://www.maximumfun.org/shows/adventure-zone).$newLine" +
+                            "The [show's RSS feed](http://adventurezone.libsyn.com/rss).$newLine" +
+                            "[TAZ in iTunes/Apple Podcasts](https://itunes.apple.com/us/podcast/the-adventure-zone/" +
+                            "id947899573?mt=2).$newLine" +
+                            newRSSItem.description.replace(Regex("<.*?>"),"")
 
                     rssBot.makeRSSSelfPost(post)
                 }
@@ -49,7 +52,8 @@ fun main(args: Array<String>) {
                     val post = ChronoPost()
                     post.postTitle = "Sunday Off-Topic Discussion"
                     post.postText = "This thread is for all those posts you want to make during the week that break " +
-                            "the relevancy rules. Go hog wild. The thread is not flagged for spoilers so that " +
+                            "the relevancy rules. Go hog wild.$newLine" +
+                            "The thread is not flagged for spoilers so that " +
                             "everyone can enjoy it, please keep that in mind and use spoiler tags if you want to " +
                             "discuss anything pertaining to the recent arc."
                     rssBot.makeChronoPost(post)
@@ -118,5 +122,5 @@ private fun customLinkBuilder(rssLink: String): String {
  * Markdown to Url encoder. Collection of global string values. These are used to allow for proper comment formatting.
  */
 object md {
-    val newLine = ""
+    val newLine = "%0A%0A "
 }
