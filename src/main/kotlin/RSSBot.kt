@@ -15,6 +15,7 @@ import net.dean.jraw.models.Listing
 import net.dean.jraw.models.Message
 import net.dean.jraw.references.CommentReference
 import net.dean.jraw.references.InboxReference
+import net.dean.jraw.references.SubmissionReference
 
 
 /**
@@ -57,8 +58,10 @@ class RSSBot {
     /**
      * Creates a new link [post] based on the new RSS Feed item.
      */
-    fun makeRSSLinkPost(post: RSSPost) {
-        subredditReference!!.submit(SubmissionKind.LINK, post.postTitle, post.postUrl, false)
+    fun makeRSSLinkPost(post: RSSPost, spoiler: Boolean = false, sticky: Boolean = false) {
+        val submission = subredditReference!!.submit(SubmissionKind.LINK, post.postTitle, post.postUrl, false)
+        submission.flagAsSpoiler(spoiler)
+        submission.stickyPost(sticky)
     }
 
     /**
@@ -73,10 +76,6 @@ class RSSBot {
      */
     fun makeChronoPost(post: ChronoPost) {
         subredditReference!!.submit(SubmissionKind.SELF, post.postTitle, post.postText, false)
-    }
-
-    private fun flagSpoiler(boolean: Boolean) {
-
     }
 
     /**

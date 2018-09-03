@@ -39,7 +39,7 @@ fun main(args: Array<String>) {
                     val post = RSSPost()
                     post.postTitle = newRSSItem!!.title + " Discussion Thread"
                     post.postUrl = newRSSItem.link
-                    rssBot.makeRSSLinkPost(post)
+                    rssBot.makeRSSLinkPost(post, true, true)
                 }
 
                 if (today == DayOfWeek.WEDNESDAY && time.hour == 12 && time.minute == 0) {
