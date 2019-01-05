@@ -2,6 +2,7 @@ import md.newLine
 import models.ChronoPost
 import models.RSSComment
 import models.RSSPost
+import models.Feed
 import java.time.LocalDateTime
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
@@ -44,8 +45,8 @@ fun main(args: Array<String>) {
                             "[TAZ in iTunes/Apple Podcasts](https://itunes.apple.com/us/podcast/the-adventure-zone/" +
                             "id947899573?mt=2).$newLine" +
                             newRSSItem.description.replace(Regex("<.*?>"),"")
-
-                    rssBot.makeRSSSelfPost(post)
+                            
+                    rssBot.makeRSSSelfPost(post, true, true)
                 }
 
                 if (today == DayOfWeek.SUNDAY && time.hour == 12 && time.minute == 0) {
