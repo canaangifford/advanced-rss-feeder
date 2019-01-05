@@ -67,8 +67,10 @@ class RSSBot {
     /**
      * Creates a new 'self' [post] based on the new RSS Feed item.
      */
-    fun makeRSSSelfPost(post: RSSPost) {
-        subredditReference!!.submit(SubmissionKind.SELF, post.postTitle, post.postText, false)
+    fun makeRSSSelfPost(post: RSSPost, spoiler: Boolean = false, sticky: Boolean = false) {
+        val submission = subredditReference!!.submit(SubmissionKind.SELF, post.postTitle, post.postText, false)
+        submission.flagAsSpoiler(spoiler)
+        submission.stickyPost(sticky)
     }
 
     /**

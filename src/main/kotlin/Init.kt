@@ -1,6 +1,7 @@
 import models.ChronoPost
 import models.RSSComment
 import models.RSSPost
+import models.Feed
 import java.time.LocalDateTime
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
@@ -39,7 +40,7 @@ fun main(args: Array<String>) {
                     val post = RSSPost()
                     post.postTitle = newRSSItem!!.title + " Discussion Thread"
                     post.postUrl = newRSSItem.link
-                    rssBot.makeRSSLinkPost(post, true, true)
+                    rssBot.makeRSSSelfPost(post, true, true)
                 }
 
                 if (today == DayOfWeek.WEDNESDAY && time.hour == 12 && time.minute == 0) {
