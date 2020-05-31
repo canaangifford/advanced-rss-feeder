@@ -1,5 +1,4 @@
 import MD.newLine
-import models.ChronoPost
 import models.RSSComment
 import models.RSSPost
 import models.Feed
@@ -40,24 +39,17 @@ fun main(args: Array<String>) {
                     val newRSSItem = rssBot.getNewestFeedItem()
                     val post = RSSPost()
                     post.postTitle = newRSSItem!!.title + " | Discussion Thread"
-                    post.postText = "On [MaxFun](http://www.maximumfun.org/shows/adventure-zone).$newLine" +
-                            "The [show's RSS feed](http://adventurezone.libsyn.com/rss).$newLine" +
+                    post.postText = "On [McElroy Family Link](https://www.themcelroy.family/TheAdventureZone).$newLine" +
                             "[TAZ in iTunes/Apple Podcasts](https://itunes.apple.com/us/podcast/the-adventure-zone/" +
                             "id947899573?mt=2).$newLine" +
-                            newRSSItem.description.replace(Regex("<.*?>"),"")
+                            "The [show's RSS feed](https://feeds.simplecast.com/cYQVc__c).$newLine" +
+                            newRSSItem.description.replace(Regex("<.*?>"), " ").trim()
                             
                     rssBot.makeRSSSelfPost(post, true, true)
                 }
 
                 if (today == DayOfWeek.SUNDAY && time.hour == 12 && time.minute == 0) {
-                    val post = ChronoPost()
-                    post.postTitle = "Sunday Off-Topic Discussion"
-                    post.postText = "This thread is for all those posts you want to make during the week that break " +
-                            "the relevancy rules. Go hog wild.$newLine" +
-                            "The thread is not flagged for spoilers so that " +
-                            "everyone can enjoy it, please keep that in mind and use spoiler tags if you want to " +
-                            "discuss anything pertaining to the recent arc."
-                    rssBot.makeChronoPost(post)
+
                 }
 
             } catch (e: Exception) {
