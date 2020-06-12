@@ -1,4 +1,4 @@
-import models.ChronoPost
+import MD.newLine
 import models.RSSComment
 import models.RSSPost
 import models.Feed
@@ -119,6 +119,6 @@ private fun customLinkBuilder(rssLink: String): String {
 /**
  * Markdown to Url encoder. Collection of global string values. These are used to allow for proper comment formatting.
  */
-object md {
-    val newLine = ""
+object MD {
+    const val newLine = "\n\n "
 }

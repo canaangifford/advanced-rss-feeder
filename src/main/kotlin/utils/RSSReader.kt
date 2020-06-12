@@ -5,11 +5,8 @@ import java.io.InputStream
 import java.net.MalformedURLException
 import java.net.URL
 
-import javax.xml.stream.XMLEventReader
 import javax.xml.stream.XMLInputFactory
 import javax.xml.stream.XMLStreamException
-import javax.xml.stream.events.Characters
-import javax.xml.stream.events.XMLEvent
 import models.Feed
 import models.FeedItem
 import kotlin.collections.HashMap
@@ -39,7 +36,7 @@ class RSSReader(feedUrl: String) {
     }
 
     /**
-     * Return info for the specific [searchTerm]. Loops through the entire [feed] starting with most recent to find the
+     * Return info for the specific search term. Loops through the entire [Feed] starting with most recent to find the
      * first match.
      */
     fun getSpecificItem(searchTerm: String): FeedItem? {
@@ -85,7 +82,7 @@ class RSSReader(feedUrl: String) {
 
     /**
      * Gets the new state of the RSS feed and checks it against the current [Feed]. If the new state of the RSS feed
-     * contains more episodes, swap the existing feed into the new feed. Return [true] if the swap was successful.
+     * contains more episodes, swap the existing feed into the new feed. Return true if the swap was successful.
      */
     fun pollFeed(): Boolean {
         val currFeed = buildFeed()
@@ -121,7 +118,7 @@ class RSSReader(feedUrl: String) {
             val eventReader = inputFactory.createXMLEventReader(input)
             // Parse the RSS XML
             while (eventReader.hasNext()) {
-                var event = eventReader.nextEvent()
+                val event = eventReader.nextEvent()
                 if (event.isStartElement) {
                     val localPart = event.asStartElement().name.localPart
                     when (localPart) {
@@ -131,16 +128,16 @@ class RSSReader(feedUrl: String) {
                                 feed = Feed(title, link, description, language,
                                         copyright, publishDate)
                             }
-                            event = eventReader.nextEvent()
+                            eventReader.nextEvent()
                         }
-                        "title" -> title = getCharacterData(event, eventReader)
-                        "description" -> description = getCharacterData(event, eventReader)
-                        "link" -> link = getCharacterData(event, eventReader)
-                        "guid" -> guid = getCharacterData(event, eventReader)
-                        "language" -> language = getCharacterData(event, eventReader)
-                        "author" -> author = getCharacterData(event, eventReader)
-                        "pubDate" -> publishDate = getCharacterData(event, eventReader)
-                        "copyright" -> copyright = getCharacterData(event, eventReader)
+                        "title" -> title = eventReader.elementText
+                        "description" -> description = eventReader.elementText
+                        "link" -> link = eventReader.elementText
+                        "guid" -> guid = eventReader.elementText
+                        "language" -> language = eventReader.elementText
+                        "author" -> author = eventReader.elementText
+                        "pubDate" -> publishDate = eventReader.elementText
+                        "copyright" -> copyright = eventReader.elementText
                     }
                 } else if (event.isEndElement) {
                     if (event.asEndElement().name.localPart === "item") {
@@ -152,7 +149,7 @@ class RSSReader(feedUrl: String) {
                         newItem.title = title
                         newItem.pubDate = publishDate
                         feed!!.items.add(newItem)
-                        event = eventReader.nextEvent()
+                        eventReader.nextEvent()
                         continue
                     }
                 }
@@ -162,20 +159,6 @@ class RSSReader(feedUrl: String) {
             throw RuntimeException(e)
         }
         return feed
-    }
-
-    /**
-     * Helper function to handle a single [XMLEvent].
-     */
-    @Throws(XMLStreamException::class)
-    private fun getCharacterData(event: XMLEvent, eventReader: XMLEventReader): String {
-        var event = event
-        var result = ""
-        event = eventReader.nextEvent()
-        if (event is Characters) {
-            result = event.asCharacters().data
-        }
-        return result
     }
 
     /**
